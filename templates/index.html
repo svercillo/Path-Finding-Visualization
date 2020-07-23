@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
+        <link rel="icon" href="http://example.com/favicon.png"> 
     </head>
     <body id="page-top">
 
@@ -15,25 +16,12 @@
         <script src="https://www.amcharts.com/lib/4/maps.js"></script>
         <script src="https://www.amcharts.com/lib/4/geodata/worldLow.js"></script>
         <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
-        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script src="./static/js/flight.js"></script>
         <input type="file" id="file-input" />
         <h3>Contents of the file:</h3>
         <pre id="file-content"></pre>
     </body>
-    
-    <script>
-        function loadDoc() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("demo").innerHTML = this.responseText;
-            }
-            };
-            xhttp.open("GET", "demo_get.asp", true);
-            xhttp.send();
-        }
-    </script>    
 </html>
