@@ -1,6 +1,6 @@
 // Classes for AStar Algorithm
 class GraphNode { 
-    constructor(title, parentName, absDistanceFrom, heuristic, connectionsAway){ 
+    constructor(title, parentName, absDistanceFrom, heuristic){ 
         this.title = title;
         this.parent = parentName;
         this.visited = false;
@@ -8,8 +8,6 @@ class GraphNode {
         this.distance = absDistanceFrom;
         this.heuristic = heuristic;
         this.priority = absDistanceFrom + heuristic;
-        // connections away 
-        this.connectionsAway = connectionsAway;
     }
     visit() {
         this.visited = true;
@@ -18,6 +16,7 @@ class GraphNode {
         this.priority = newDistance + heuristic; 
     }
 }
+
 // heuristic guilded dijkstra's
 class PriorityQueue {
     constructor(){
@@ -231,7 +230,6 @@ class Launcher {
 
     constructor (data){
         this.data = data;
-        this.MAXVISITS = 0;
     }
     
 
@@ -239,13 +237,11 @@ class Launcher {
         
         var ACTQUEUE = []
         var data = this.data
-        var MAXVISITS = 0;
-        console.log(data);
+        console.log(data)        
 
 
         //  INITAL VARIABLES
         var colors = [];
-        var colors2= [];
         var startingCols = [];
         // var DIVISOR = 100;
         var DIVISOR = 75;
@@ -332,24 +328,14 @@ class Launcher {
         // fly('CDG', 'IST')
         // console.log(aStar('AER', 'YYZ'));
         animateAStar();
-        async function animateAStar(){
+        function animateAStar(){
             var res = aStar('AER', 'YYZ');
             if (res != 'path not found'){
                 console.log(ACTQUEUE)
-                await animateMap(animateCityCreation);
-                console.log(path)
-
-                // setTimeout(async  function() {
-                //     // fly("AER", "MSQ", 0);    
-                //     // fly("AER", "KZN", 0);
-                //     // addLine("AER", "MSQ")
-                //     // addLine("AER", "KZN")
-                // }, 5000)
+                animateMap(animateCityCreation);
             }
-            
         }
 
-        
         var FROM = null;
         function aStar(from, to){       // to and from are strings ex. "YYZ", "LAX"
             FROM = from;
@@ -357,7 +343,7 @@ class Launcher {
             var iteration = 0;
             var pq = new PriorityQueue();1
 
-            let gn = new GraphNode(from, null, 0, 0, 0);
+            let gn = new GraphNode(from, null, 0, 0);
             var heuristicCoords = {};
             var nodeMap = {};
             gn.visit();
@@ -367,12 +353,7 @@ class Launcher {
                 var top = pq.poll();
 
                 ACTQUEUE.push({'action': 'delay', 'value': 1000});
-
-                if (top.connectionsAway+ 1 > MAXVISITS){
-                    MAXVISITS = top.connectionsAway +1;
-                }
-                // animate city visit
-                ACTQUEUE.push({'action': 'animatecity', 'city': top.title, 'type' : 2, 'iteration': top.connectionsAway+1});
+                ACTQUEUE.push({'action': 'animatecity', 'city': top.title, 'type' : 2});
                 
                 /* Should we delay here? */
                 // ACTQUEUE.push({'action': 'delay', 'value': 1000});
@@ -380,7 +361,7 @@ class Launcher {
                 
                 // add city
                 top.visit();
-                // console.log(top);
+                console.log(top);
 
                 var flyToList = [];
                 for (var i =0; i<data['routes'][top.title].length; i++){
@@ -395,7 +376,6 @@ class Launcher {
                         inNodeMap = true;
                     }
 
-                    // add new cities 
                     ACTQUEUE.push({'action': 'animatecity', 'city': neighbor, 'type' : -1});
                     
                     flyToList.push([top, neighbor]);
@@ -418,10 +398,10 @@ class Launcher {
                                 heuristic = haversineDist(data['airports'][neighbor].coords, data['airports'][to].coords);
                                 heuristicCoords[str] = heuristic;
                             }
-                            let gn = new GraphNode(neighbor, top.title, totalD, heuristic,top.connectionsAway + 1);
+                            let gn = new GraphNode(neighbor, top.title, totalD, heuristic);
                             nodeMap[neighbor] = gn;
                             pq.add(gn);
-                            // console.log( neighbor + " distance to:  " + (totalD + heuristic) + "     =>" + heuristic) 
+                            console.log( neighbor + " distance to:  " + (totalD + heuristic) + "     =>" + heuristic) 
                         }
                     } else {
                         let distanceTo = haversineDist(data['airports'][top.title].coords, data['airports'][neighbor].coords);
@@ -531,23 +511,21 @@ class Launcher {
 
             animateColl[animateColl.length -1].push({'action': 'animatecity', 'city': FROM, 'type' : 3})
             await delay(delayPeriods.loadMap);
-            animateCityCreation(null, null, animateColl[animateColl.length -1], -1);
+            animateCityCreation(null, null, animateColl[animateColl.length -1]);
                         
             var flyList = []
             
-            for (var i =2; i<ACTQUEUE.length-1; i++){
+            for (var i =2; i< ACTQUEUE.length; i++){
                 switch (ACTQUEUE[i].action){
                     case 'animatecity':                        
                         if (ACTQUEUE[i].type == -1) {
-                            if (animateColl[animateColl.length-1].length > 10){
+                            if (animateColl[animateColl.length-1].length > 20){
                                 animateColl.push([]);
                             }
                             animateList.push(ACTQUEUE[i]);
                             // animateColl[animateColl.length-1].push(ACTQUEUE[i]);
                         } else { 
-                            console.log(ACTQUEUE[i])
-                            
-                            animateCityCreation(ACTQUEUE[i].city, ACTQUEUE[i].type, null, ACTQUEUE[i]['iteration']);
+                            animateCityCreation(ACTQUEUE[i].city, ACTQUEUE[i].type, null);
                         }
                         break;
                     case 'fly':
@@ -561,57 +539,54 @@ class Launcher {
                         }
 
                         flyList.push(ACTQUEUE[i]);
+                        console.log ("pp")
+                        console.log (ACTQUEUE[i])
                         break;
                     case 'delay':
-                        await delay(1500)
-                        // requestAnimationFrame(async function(){
-                            await processFlightList(flyList);
-                        // })
+                        await processFlightList(flyList);
                         flyList = [];
-                        requestAnimationFrame(function(){
-                            // console.log(ACTQUEUE.length)
-                            // console.log(ACTQUEUE) 
 
-                            delay(ACTQUEUE[i].value);
-                        })
+                        requestAnimationFrame(async function (){
+                            await delay(ACTQUEUE[i].value);
+                        });
+                        
                         break;
                 }
             }
             
         }
 
-        async function animateCityCreation(title, type, list, colorIter){ 
+        async function animateCityCreation(title, type, list){ 
             var i =0;
             if (type == -1){
                 for (var i =0; i<list.length; i++){
-                    // console.log(data.airports[list[i]])
-                    addCity(list[i].city, null, -1, -69);
-                    await delay(10);
+                    requestAnimationFrame(async function(timestamp){
+                        await addCity(list[i].city, null, -1);     
+                    });
                 }
-            } else {
-                
-                timeout();
-                async function timeout() {
-                    
-                    requestAnimationFrame(async function () {
-                        if (i != DIVISOR-1){
-                            if (list != null){
-                                for (var j =0; j <list.length; j++){
-                                    addCity(list[j].city, i, list[j].type, list);
-                                }
-                            } else {
-                                addCity(title, i, type, colorIter);
-                            }
-                            timeout();
-                        }
-                        i++;
-                    }, 0 , ); // want this to load right away 
-                }            
+                return;
             }
 
+            timeout();
+            async function timeout() {
+                
+                requestAnimationFrame(async function () {
+                    if (i != DIVISOR-1){
+                        if (list != null){
+                            for (var j =0; j <list.length; j++){
+                                addCity(list[j].city, i, list[j].type);
+                            }
+                        } else {
+                            addCity(title, i, type);
+                        }
+                        timeout();
+                    }
+                    i++;
+                }, 0); // want this to load right away 
+            }            
         }
 
-        function addCity(title, iteration, type, colorIter) {
+        function addCity(title, iteration, type) {
             const rad = city.radius
             const fill = city.fill;
             const coords = data.airports[title].coords;
@@ -635,12 +610,7 @@ class Launcher {
                 case 2: 
                     city.radius = sizes['start'] + (sizes['end'] - sizes['start'])/DIVISOR * iteration;
                     city.strokeWidth = city.radius /3;
-                    if (MAXVISITS > 0){
-                        city.fill = colors2[Math.round(iteration/(MAXVISITS) + (colorIter - 2) * DIVISOR/(MAXVISITS)) ];
-                        // city.fill = colors[iteration];
-                    } else {
-                        city.fill = colors[iteration];
-                    }
+                    city.fill = colors[iteration];
                     break;
                 case 3:
                     city.radius = 0 + (sizes['end'] - 0)/DIVISOR * iteration;
@@ -673,28 +643,20 @@ class Launcher {
 
 
         async function processFlightList (flyList){
-            // await delay(planeAnimationTime);
+            console.log(flyList)
+            
             var c  =0 ; 
             for (var i =0; i<flyList.length; i++){
-                // requestAnimationFrame(function(){
-                // })
+                fly(flyList[i].from, flyList[i].to);
                 flyiteration = 0;
                 c++;
                 
-                if (c>=15){
-                    if (c % 15 == 0){
-                        await delay(planeAnimationTime)
-                    }
-                    fly(flyList[i].from, flyList[i].to, 0);
-
-                    // c = 0;    
-                }  else {
-                    fly(flyList[i].from, flyList[i].to);
-
+                if (c==20){
+                    c = 0;    
+                    await delay(planeAnimationTime)
                 }
                 flyiteration = 0;
             }
-            // await delay(300);
         }
 
         function delay(ms){
@@ -706,35 +668,7 @@ class Launcher {
         var to = null;
         var from = null;
 
-        
-        // function addLine(to, from){
-        
-        //     var lineSeries = chart.series.push(new am4maps.MapArcSeries());
-        //     lineSeries.mapLines.template.line.strokeWidth = 2
-        //     lineSeries.mapLines.template.line.strokeOpacity = 0.5;
-        //     lineSeries.mapLines.template.line.stroke = city.fill;
-        //     lineSeries.mapLines.template.line.nonScalingStroke = true;
-        //     lineSeries.mapLines.template.line.strokeDasharray = "1,1";
-        //     lineSeries.zIndex = 10;
-            
-        //     // var shadowLineSeries = chart.series.push(new am4maps.MapLineSeries());
-        //     // shadowLineSeries.mapLines.template.line.strokeOpacity = 0;
-        //     // shadowLineSeries.mapLines.template.line.nonScalingStroke = true;
-        //     // shadowLineSeries.mapLines.template.shortestDistance = false;
-        //     // shadowLineSeries.zIndex = 5;
-    
-        //     var line = lineSeries.mapLines.create(); 
-        //     line.imagesToConnect = [to, from];
-        //     line.line.controlPointDistance = -0.3;
-    
-        //     // var shadowLine = shadowLineSeries.mapLines.create();
-        //     // shadowLine.imagesToConnect = [to, from];
-
-        // }
-
-        // function
-
-        async function fly(flyfrom, flyto, addline){
+        async function fly(flyfrom, flyto){
 
             to = cityObjects[flyto];
             from = cityObjects[flyfrom];
@@ -764,7 +698,7 @@ class Launcher {
             }
 
             // Add lines and path
-            
+
             var lineSeries = chart.series.push(new am4maps.MapArcSeries());
             lineSeries.mapLines.template.line.strokeWidth = 2
             lineSeries.mapLines.template.line.strokeOpacity = 0.5;
@@ -778,7 +712,6 @@ class Launcher {
             shadowLineSeries.mapLines.template.line.nonScalingStroke = true;
             shadowLineSeries.mapLines.template.shortestDistance = false;
             shadowLineSeries.zIndex = 5;
-
     
             var line = lineSeries.mapLines.create(); 
             line.imagesToConnect = [to, from];
@@ -786,10 +719,6 @@ class Launcher {
     
             var shadowLine = shadowLineSeries.mapLines.create();
             shadowLine.imagesToConnect = [to, from];
-
-            if (addline != null){
-                return;
-            }
 
             // //  Animate lines being created 
             // const iterTo = 500;
@@ -879,7 +808,6 @@ class Launcher {
         
             from = null;
             to = null;
-
             
             requestAnimationFrame(function () {
                 setTimeout(() => {
@@ -889,13 +817,12 @@ class Launcher {
                     shadowAnimation.kill()  
                 },planeAnimationTime);
                 // DO SOME SHIT IN HERE animate disappearance
-            }, planeAnimationTime);  
-            
+            }, planeAnimationTime);
         }
 
         function colorAnimation(initObj, targObj, currObj){
             
-            var gradientr = (targObj.r-initObj.r)/DIVISOR;
+            var gradientr = (targObj.r-initObj.r)/DIVISOR ;
             var gradientg = (targObj.g-initObj.g)/DIVISOR ;
             var gradientb = (targObj.b-initObj.b)/DIVISOR ;   
             
@@ -918,46 +845,32 @@ class Launcher {
             }
     
             let data = {};
-            var newString = "rgb(" + Math.round(objCopy.r).toString(10) + "," +   
-                Math.round(objCopy.g).toString(10) + "," + 
-                Math.round(objCopy.b).toString(10) +  ")"; 
+            var newString = "rgb(" + Math.round(objCopy.r).toString(10) + "," +   Math.round(objCopy.g).toString(10) + "," + Math.round(objCopy.b).toString(10) +  ")"; 
     
             data['string'] = newString;
             data['object'] = objCopy;
             return data;
         }
 
-    
         function fillColorsArray(){
             const startCol = {'r' : 64, 'g': 155, 'b' : 208};
             const currCol = {'r' : 64, 'g': 155, 'b' : 208};
             const targCol = {'r' : 144, 'g': 12, 'b' : 63};
-
             
-            const startCol2 = {'r': 51, 'g': 255, 'b': 253};
-            const currCol2 = {'r': 51, 'g': 255, 'b': 253};
-            const targCol2 = {'r' : 144, 'g': 12, 'b' : 63};
-            
-            const white = {'r' : 64, 'g': 155, 'b': 208};
-            const currWhiteCol = {'r' : 64, 'g': 155, 'b': 208};
-            const targStartCol = {'r' : 255, 'g': 255, 'b' : 255};
+            const white = {'r' : 255, 'g': 255, 'b': 255};
+            const currWhiteCol = {'r' : 255, 'g': 255, 'b': 255};
+            const targStartCol = {'r' : 64, 'g': 155, 'b' : 208};
 
             var col = colorAnimation(startCol, targCol, currCol); 
-            var col2 = colorAnimation(startCol2, targCol2, currCol2); 
             var colW = colorAnimation(white, targStartCol, currWhiteCol); 
 
             for (var i =1; i<DIVISOR ; i++ ){
                 col = colorAnimation(startCol, targCol, col.object);
                 colors[i] = col.string;
-                
-                col2 = colorAnimation(startCol2, targCol2, col2.object);
-                colors2[i] = col2.string;
 
                 colW = colorAnimation(white, targStartCol, colW.object);
                 startingCols[i] = colW.string;
             }   
         }
-        
-        console.log(data)   
     }
 }
