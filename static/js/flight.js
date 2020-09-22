@@ -209,7 +209,7 @@ class List {
 }
 
 //   API calls / page initiation scripts
-async function start() {
+async function start(from, to ) {
     var result = {};
 
     try {
@@ -220,11 +220,12 @@ async function start() {
         console.error(error);
     }
     
+    
     var launcher = new Launcher(result);
     // launch app
-    launcher.launch();
+    launcher.launch(from, to);
 }
-start()
+
 
 
 class Launcher {
@@ -235,9 +236,11 @@ class Launcher {
     }
     
 
-    launch(){
+    launch(from, to){
+        
         
         var ACTQUEUE = []
+        var PATH = null;
         var data = this.data
         var MAXVISITS = 0;
         console.log(data);
@@ -247,8 +250,9 @@ class Launcher {
         var colors = [];
         var colors2= [];
         var startingCols = [];
+        var yellowCols = [];
         // var DIVISOR = 100;
-        var DIVISOR = 75;
+        var DIVISOR = 50;
     
         fillColorsArray(); // fills colors
         
@@ -257,6 +261,7 @@ class Launcher {
         // Themes end
         ``
         // Create map instance
+        console.log("SDFSDFSDFSD")
         var chart = am4core.create("chartdiv", am4maps.MapChart);
         chart.geodata = am4geodata_worldLow;
         // chart.projection = new am4maps.projections.Miller();           
@@ -325,22 +330,26 @@ class Launcher {
             planeAnimationTime = ms;
         }
 
-        setPlaneAnimationTime(2000);
+        // setPlaneAnimationTime(300);
+        setPlaneAnimationTime(1500);
         setSizes(3, 8);
+
 
         
         // fly('CDG', 'IST')
         // console.log(aStar('AER', 'YYZ'));
-        animateAStar();
-        async function animateAStar(){
-            var res = aStar('AER', 'YYZ');
+        animateAStar(from, to);
+        async function animateAStar(from, to){
+            var res = aStar(from, to);
+            
+            var path = res.path;
+            
             if (res != 'path not found'){
                 console.log(ACTQUEUE)
                 await animateMap(animateCityCreation);
-                console.log(path)
-
+                
                 // setTimeout(async  function() {
-                //     // fly("AER", "MSQ", 0);    
+                    // fly("AER", "MSQ", 0);    
                 //     // fly("AER", "KZN", 0);
                 //     // addLine("AER", "MSQ")
                 //     // addLine("AER", "KZN")
@@ -351,11 +360,11 @@ class Launcher {
 
         
         var FROM = null;
-        function aStar(from, to){       // to and from are strings ex. "YYZ", "LAX"
+        async function aStar(from, to){       // to and from are strings ex. "YYZ", "LAX"
             FROM = from;
             const iterationLimit = 100000;
             var iteration = 0;
-            var pq = new PriorityQueue();1
+            var pq = new PriorityQueue();
 
             let gn = new GraphNode(from, null, 0, 0, 0);
             var heuristicCoords = {};
@@ -363,20 +372,21 @@ class Launcher {
             gn.visit();
             nodeMap[from] = gn;
             pq.add(gn);
+            
             while (!pq.isEmpty() && iteration < iterationLimit){
                 var top = pq.poll();
-
-                ACTQUEUE.push({'action': 'delay', 'value': 1000});
-
+                
+                ACTQUEUE.push({'action': 'delay', 'value': 500});
+                
                 if (top.connectionsAway+ 1 > MAXVISITS){
                     MAXVISITS = top.connectionsAway +1;
                 }
                 // animate city visit
                 ACTQUEUE.push({'action': 'animatecity', 'city': top.title, 'type' : 2, 'iteration': top.connectionsAway+1});
+                // ACTQUEUE.push({'action': 'animatecity', 'city': "YYZ", 'type' : 4});
                 
                 /* Should we delay here? */
                 // ACTQUEUE.push({'action': 'delay', 'value': 1000});
-                
                 
                 // add city
                 top.visit();
@@ -435,14 +445,24 @@ class Launcher {
                             node = nodeMap[node.parent];
                         }
                         
-                        console.log(path)
+                        
+                        // ACTQUEUE.push({'action': 'fly',
+                        //     'from': 'LAX', 
+                        //     'to': 'YYZ'
+                        // });
+
+                        ACTQUEUE.push({'action': 'fly',
+                            'from': path[path.length-1],
+                            'to': path[path.length-2]
+                        });
+                        ACTQUEUE.push({'action': 'animatecity', 'city': "YYZ", 'type' : 4});
+                        PATH = path;
                         return {'path' : path, 'distance' : totalD};
                     }
 
                 }
 
-                ACTQUEUE.push({'action': 'delay', 'value' : 1000});
-                
+                ACTQUEUE.push({'action': 'delay', 'value' : 400});
                 for (var j =0; j < flyToList.length; j++){
                     ACTQUEUE.push({'action': 'fly', 'from': flyToList[j][0].title,
                         'to': flyToList[j][1]});
@@ -532,10 +552,11 @@ class Launcher {
             animateColl[animateColl.length -1].push({'action': 'animatecity', 'city': FROM, 'type' : 3})
             await delay(delayPeriods.loadMap);
             animateCityCreation(null, null, animateColl[animateColl.length -1], -1);
-                        
             var flyList = []
+            flyList = [];
             
             for (var i =2; i<ACTQUEUE.length-1; i++){
+                console.log("IN FOR LOOP");
                 switch (ACTQUEUE[i].action){
                     case 'animatecity':                        
                         if (ACTQUEUE[i].type == -1) {
@@ -563,21 +584,44 @@ class Launcher {
                         flyList.push(ACTQUEUE[i]);
                         break;
                     case 'delay':
-                        await delay(1500)
-                        // requestAnimationFrame(async function(){
-                            await processFlightList(flyList);
-                        // })
+                        await delay(800)
+                        await processFlightList(flyList);
                         flyList = [];
                         requestAnimationFrame(function(){
-                            // console.log(ACTQUEUE.length)
-                            // console.log(ACTQUEUE) 
-
                             delay(ACTQUEUE[i].value);
-                        })
+                        });
                         break;
                 }
             }
+
+            flyList.push ({'action': 'fly', 'from': PATH[PATH.length-1], 'to':PATH[PATH.length-2] });
+            await yellowDisBish();
+
+            async function yellowDisBish(){
+                for ( var i=0; i< PATH.length; i++ ){
+                    let CITY = PATH[i];
+                    console.log(CITY)
+                    animateColl[animateColl.length -1].push({'action': 'animatecity', 'city': CITY, 'type' : 4})
+                    await animateCityCreation(null, null, animateColl[animateColl.length -1], -1);
+                }
+            }
+
+                        //             // requestAnimationFrame(function(){
             
+                        //     // flyList.push({'action' : 'fly', 'from' : 'KRR', 'to': 'IKA'});
+                        //     // flyList.push({'action' : 'fly', 'from' : PATH[PATH.length-1], 'to': PATH[PATH.length-2]});
+                        //     for ( var i =0; i<PATH.length-1; i++){
+                        //         flyList.push({'action' : 'fly', 'from' : PATH[PATH.length-1 -i], 'to': PATH[PATH.length-2 -i]});
+                        //     }
+                        // // })
+                        // // flyList.push({'action': 'fly', 'from': "YYZ",
+                        // //             'to': "KEF"});
+                        // console.log("!!!!!!!!!!!!!!!!!")
+                        // await processFlightList(flyList)
+                        // flyList = [];
+            await delay(5000);
+            await go();
+
         }
 
         async function animateCityCreation(title, type, list, colorIter){ 
@@ -605,7 +649,7 @@ class Launcher {
                             timeout();
                         }
                         i++;
-                    }, 0 , ); // want this to load right away 
+                    }, 0); // want this to load right away 
                 }            
             }
 
@@ -646,14 +690,20 @@ class Launcher {
                     city.radius = 0 + (sizes['end'] - 0)/DIVISOR * iteration;
                     city.strokeWidth = city.radius /3;
                     
-                    if (iteration < DIVISOR /2){
-                        city.fill = startingCols[iteration]; 
-                    } else {
-                        city.fill = colors[iteration/2];   
-                    }
                     city.fill = colors[iteration];
                     break;
-                }
+                case 4: 
+
+                    city.radius = sizes['end'];
+                    city.strokeWidth = city.radius /3;
+                    
+                    city.fill = yellowCols[iteration];
+                    break;
+                    // city.radius = sizes["end"];
+                    // city.strokeWidth = city.radius /3;
+                    // city.fill = yellowCols[iteration];
+                    // break;
+            }
                     // city.radius = 0 + sizes['start']/DIVISOR * iteration;
                     // city.strokeWidth = city.radius /3;
                     // city.fill = colors[iteration];
@@ -684,12 +734,14 @@ class Launcher {
                 if (c>=15){
                     if (c % 15 == 0){
                         await delay(planeAnimationTime)
+                        // fly(flyList[i].from, flyList[i].to, 0);
+                        // break;
                     }
-                    fly(flyList[i].from, flyList[i].to, 0);
-
-                    // c = 0;    
                 }  else {
-                    fly(flyList[i].from, flyList[i].to);
+                    // requestAnimationFrame(function(){
+                        fly(flyList[i].from, flyList[i].to);
+                        // })
+                    
 
                 }
                 flyiteration = 0;
@@ -708,7 +760,6 @@ class Launcher {
 
         
         // function addLine(to, from){
-        
         //     var lineSeries = chart.series.push(new am4maps.MapArcSeries());
         //     lineSeries.mapLines.template.line.strokeWidth = 2
         //     lineSeries.mapLines.template.line.strokeOpacity = 0.5;
@@ -941,10 +992,21 @@ class Launcher {
             const white = {'r' : 64, 'g': 155, 'b': 208};
             const currWhiteCol = {'r' : 64, 'g': 155, 'b': 208};
             const targStartCol = {'r' : 255, 'g': 255, 'b' : 255};
+            
+            const endCol = {'r' : 144, 'g': 12, 'b' : 63};
+            const curryelCol = {'r' : 144, 'g': 12, 'b' : 63};            
+            const yellowTarg = {'r' :255, 'g': 246,  'b': 161};
 
+
+            // const endCol = {'r' : 177, 'g': 236, 'b' : 213};
+            // const curryelCol = {'r' : 177, 'g': 236, 'b' : 213};
+            // const yellowTarg = {'r' :255, 'g': 246,  'b': 161};
+
+            
             var col = colorAnimation(startCol, targCol, currCol); 
             var col2 = colorAnimation(startCol2, targCol2, currCol2); 
             var colW = colorAnimation(white, targStartCol, currWhiteCol); 
+            var colY = colorAnimation(endCol, yellowTarg, curryelCol);
 
             for (var i =1; i<DIVISOR ; i++ ){
                 col = colorAnimation(startCol, targCol, col.object);
@@ -955,9 +1017,157 @@ class Launcher {
 
                 colW = colorAnimation(white, targStartCol, colW.object);
                 startingCols[i] = colW.string;
-            }   
+
+                colY = colorAnimation(endCol, yellowTarg, colY.object);
+                yellowCols[i] = colY.string;
+            }
         }
-        
         console.log(data)   
+
+        
+        async function go(){            
+
+            
+            // Add lines
+            var lineSeries = chart.series.push(new am4maps.MapArcSeries());
+            lineSeries.mapLines.template.line.strokeWidth = 10  ;
+            lineSeries.mapLines.template.line.strokeOpacity = 0.5;
+            // lineSeries.mapLines.template.line.stroke = city.fill;
+            
+            lineSeries.mapLines.template.line.stroke =  {'r' :255, 'g': 204,  'b': 17};
+            // lineSeries.mapLines.template.line.stroke.t =
+            
+            
+            lineSeries.mapLines.template.line.nonScalingStroke = true;
+            lineSeries.mapLines.template.line.strokeDasharray = "1,1";
+            lineSeries.zIndex = 10;
+            
+            var shadowLineSeries = chart.series.push(new am4maps.MapLineSeries());
+            shadowLineSeries.mapLines.template.line.strokeOpacity = 0;
+            shadowLineSeries.mapLines.template.line.nonScalingStroke = true;
+            shadowLineSeries.mapLines.template.shortestDistance = false;
+            shadowLineSeries.zIndex = 5;
+            
+            function addLine(from, to) {
+                var line = lineSeries.mapLines.create();
+                line.imagesToConnect = [from, to];
+                line.line.controlPointDistance = -0.3;
+                
+                var shadowLine = shadowLineSeries.mapLines.create();
+                shadowLine.imagesToConnect = [from, to];
+                
+                console.log("!!!!!!!!!!!")
+                return line;
+            }
+            
+            // addLine(paris, toronto);
+            // addLine(toronto, la);
+            // addLine(la, havana);
+            
+            for (var i =0; i< PATH.length-1; i++){   
+                addLine(cityObjects[PATH[PATH.length-(i+1)]], cityObjects[PATH[PATH.length-(i+2)]]);
+            }
+            
+            // Add plane
+            var plane = lineSeries.mapLines.getIndex(0).lineObjects.create();
+            plane.position = 0;
+            plane.width = 48;
+            plane.height = 48;
+            
+            plane.adapter.add("scale", function(scale, target) {
+                return 0.5 * (1 - (Math.abs(0.5 - target.position)));
+            })
+
+            var planeImage = plane.createChild(am4core.Sprite);
+            planeImage.scale = 0.15;
+            planeImage.horizontalCenter = "middle";
+            planeImage.verticalCenter = "middle";
+            planeImage.path = "m2,106h28l24,30h72l-44,-133h35l80,132h98c21,0 21,34 0,34l-98,0 -80,134h-35l43,-133h-71l-24,30h-28l15,-47";
+            planeImage.fill = chart.colors.getIndex(2).brighten(-0.2);
+            planeImage.strokeOpacity = 0;
+
+            var shadowPlane = shadowLineSeries.mapLines.getIndex(0).lineObjects.create();
+            shadowPlane.position = 0;
+            shadowPlane.width = 48;
+            shadowPlane.height = 48;
+
+            var shadowPlaneImage = shadowPlane.createChild(am4core.Sprite);
+            shadowPlaneImage.scale = 0.06;
+            shadowPlaneImage.horizontalCenter = "middle";
+            shadowPlaneImage.verticalCenter = "middle";
+            shadowPlaneImage.path = "m2,106h28l24,30h72l-44,-133h35l80,132h98c21,0 21,34 0,34l-98,0 -80,134h-35l43,-133h-71l-24,30h-28l15,-47";
+            shadowPlaneImage.fill = am4core.color("#000");
+            shadowPlaneImage.strokeOpacity = 0;
+
+            shadowPlane.adapter.add("scale", function(scale, target) {
+                target.opacity = (0.6 - (Math.abs(0.5 - target.position)));
+                return 0.5 - 0.3 * (1 - (Math.abs(0.5 - target.position)));
+            })
+
+            // Plane animation
+            var currentLine =  0;
+            var direction = 1;
+            function flyPlane() {
+
+                // Get current line to attach plane to
+                plane.mapLine = lineSeries.mapLines.getIndex(currentLine);
+                plane.parent = lineSeries;
+                shadowPlane.mapLine = shadowLineSeries.mapLines.getIndex(currentLine);
+                shadowPlane.parent = shadowLineSeries;
+                shadowPlaneImage.rotation = planeImage.rotation;
+
+                // Set up animation
+                var from, to;
+                var numLines = lineSeries.mapLines.length;
+                if (direction == 1) {
+                    from = 0
+                    to = 1;
+                    if (planeImage.rotation != 0) {
+                        planeImage.animate({ to: 0, property: "rotation" }, 1000).events.on("animationended", flyPlane);
+                        return;
+                    }
+                }
+                else {
+                    from = 1;
+                    to = 0;
+                    if (planeImage.rotation != 180) {
+                        planeImage.animate({ to: 180, property: "rotation" }, 1000).events.on("animationended", flyPlane);
+                        return;
+                    }
+                }
+
+                // Start the animation
+                var animation = plane.animate({
+                    from: from,
+                    to: to,
+                    property: "position"
+                }, 2500, am4core.ease.sinInOut);
+                animation.events.on("animationended", flyPlane)
+                /*animation.events.on("animationprogress", function(ev) {
+                var progress = Math.abs(ev.progress - 0.5);
+                //console.log(progress);
+                //planeImage.scale += 0.2;
+                });*/
+
+                shadowPlane.animate({
+                    from: from,
+                    to: to,
+                    property: "position"
+                }, 2500, am4core.ease.sinInOut);
+
+                // Increment line, or reverse the direction
+                currentLine += direction;
+                if (currentLine < 0) {
+                    currentLine = 0;
+                    direction = 1;
+                }
+                else if ((currentLine + 1) > numLines) {
+                    currentLine = numLines - 1;
+                    direction = -1;
+                }
+
+            }
+            flyPlane();
+        }
     }
 }
