@@ -1,7 +1,7 @@
 # Path-Finding Visualization
 
 ## Demo
-visit www.stefanvercillo.com to see a working production model of this project
+Visit www.stefanvercillo.com to see a working production model of this project
 
 ## Introduction
 
