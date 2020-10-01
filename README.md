@@ -1,6 +1,12 @@
-# language-detector
+# Path-Finding Visualization
 
 ## Introduction
+
+The purpose of this project is to provide a visualziation of a path finding algorthim, finding the shortest path in terms of distance between two non-adjacent airports. To do this, a modified A* greedy algorthim was developed to work in a way that takes into account user-experience with a fast compute time. Using this heuristic guilded method, the best path is found and visualized in real time using JavaScript animations created optimize performance with concurrent programming.
+
+Using open source data from open2flights a list of every active airport and airport route in the world is store. This 
+
+
 This supervised learning model predicts the language of text samples using ngram frequency analysis. The objective of this project was to see if we could make a cheap and accurate prediction on the language using a limited range of morphological features. This includes:
 * n-gram combinations (i.e. "an", "ine", "hew")
 * suffixes (including last-letters)<br />
