@@ -28,6 +28,6 @@ Simply run the batch script startServer.bat and everything will be handled by th
 
 ### Acnowledgements
 * AmCharts model was used to help create globe and a simple filight animation. 
-* Open2
+* OpenFlights2 provided a DB which was used to help create this project
 * Training, CV, and test sets all extracted randomly using the 10000 most common words on Wikipedia per language
 
