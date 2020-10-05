@@ -3,10 +3,15 @@ import csv
 import json 
 app = Flask(__name__)
 app.config['TESTING'] = True
+app.config['DEBUG'] = True
 
 @app.route('/')
 def index():
     return render_template('index.html') 
+
+@app.route('/path-finding-visualization')
+def second_pages():
+    return render_template('pathfinding.html')
 
 @app.route('/getFlightData')
 def about(): 

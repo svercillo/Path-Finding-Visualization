@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script>
+        $(document).ready(function(){
+            $("#myModal").on("show.bs.modal", function(event){
+                // Get the button that triggered the modal
+                var button = $(event.relatedTarget);
+
+                // Extract value from the custom data-* attribute
+                var titleData = button.data("title");
+                $(this).find(".modal-title").text(titleData);
+            });
+        });
+        </script>
+        <style>
+            .bs-example{
+                margin: 20px;
+            }
+            html, body {
+                padding:  0;
+                margin: 0;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            }
+            .video-container {
+                position: relative;
+            }
+            .overlay-desc {
+                background: rgba(0,0,0,0);
+                position: absolute;
+                top: 0; right: 0; bottom: 0; left: 0;
+                display: flex;
+                align-items: left;
+                justify-content: center;
+                color: white;
+            }
+            .button.block {
+                display: "none";
+                width: 200px;    
+            }
+            .margin-auto {
+                margin: 0 auto;
+                font-size: 25px;
+            }
+            .container2 {
+                height: 200px;
+                position: relative;
+                border: 3px solid green;
+                }
+
+            .vertical-center {
+                margin: 0;
+                position: absolute;
+                top: 50%;
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+            }
+            .container{
+                margin: auto;
+                width: 50%;
+            }
+            .hidden2{
+                display: none;
+            }
+            input[type="email"]
+            {
+                font-size:24px;
+            }
+            button[type="button"]
+            {
+                font-size:20px
+            }
+            .chartdiv{
+                width: 100%;
+                height: 1000px;
+                background-color: green;
+            }
+            .div{
+                width: 100%;
+                height: 1000px;
+            }
+        </style>
+    </head>
+    <!-- this is a flask thing, ignore the error -->
+    <body id="page-top" style="background-image: url({{ url_for('static', filename='grain.jpg') }})">
+        <div id="preload">
+            <div id="video-container">
+                <video autoplay loop  muted height="100%" width="100%"
+                -o-object-fit: cover;
+                object-fit: cover;
+                -o-object-position: center;
+                object-position: center;
+                >
+                <source src="{{ url_for('static', filename='movie.mp4') }}" type="video/mp4">
+                </video>
+                <div class="overlay-desc">
+                    <h1>Path Finding Visualization Project</h1>
+                </div>
+            </div>
+        </div>
+        <div class="container" >
+
+        
+            
+        <!-- Trigger the modal with a button -->
+        <div class="container">
+            <div class="vertical-center">
+                <button id="togglemodal" type="button" display="none" class="block btn btn-info btn-lg  margin-auto" data-toggle="modal" data-target="#myModal">Select Start and Destination Cities</button>
+            </div>
+        </div>  
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+            
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                <h3> Enter the Starting and Destination Airport Codes</h3>
+                </div>
+
+                <div class="modal-body mx-3">
+                <div class="md-form mb-5">
+                <i class="fas fa-envelope prefix grey-text"></i>
+                <label data-error="wrong" data-success="right" for="defaultForm-email" font-size="20px">FROM:</label>
+                <input id="from" type="email" id="defaultForm-email" class="form-control validate" placeholder="AER" >
+                </div>
+
+                <div class="md-form mb-4">
+                <i class="fas fa-lock prefix grey-text"></i>
+                <label data-error="wrong" data-success="right" for="defaultForm-pass" font-size="20px">TO:</label>
+                <input id="to" type="email" id="defaultForm-emial" class="form-control validate" placeholder="YYZ">
+                </div>
+
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button id="startanimation" class="w3-btn w3-blue w3-round-xlarge" width="100px" height="60px" background-color="blue" color="black" data-dismiss="modal">Start Animation</button>
+                </div>
+
+                <div class="modal-footer">
+                <button type="button" class="w3-btn w3-red w3-round-xlarge" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+        </div>
+
+        <div class="div" id="chartdiv" display="none"></div>
+        <link rel="stylesheet" type="text/css" href="./static/css/mapstyle.css">
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://www.amcharts.com/lib/4/core.js"></script>
+        <script src="https://www.amcharts.com/lib/4/maps.js"></script>
+        <script src="https://www.amcharts.com/lib/4/geodata/worldLow.js"></script>
+        <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="./static/js/flight.js"></script>
+
+        <script>
+            // rendering page load, etc
+            var x = document.getElementById("togglemodal");
+            const y = document.getElementById("chartdiv");
+
+            x.style.display = 'none'
+            $("#container").hide();
+            setTimeout(function(){ 
+                x.style.display = ''
+                
+                $("#preload").fadeOut();
+                $("#container").show();
+            }, 3000);
+
+            $(document).ready(function(){
+                
+
+                $("#startanimation").click(function(){
+                    var from = $("#from").val();
+                    var to = $("#to").val();
+                    
+                    y.style.display ='';
+                    let x = document.getElementById("togglemodal");
+                    x.style.display = 'none'
+                    start(from.toString().toUpperCase(),to.toString().toUpperCase())
+                })
+            })
+        </script>
+    </body>
+</html>
