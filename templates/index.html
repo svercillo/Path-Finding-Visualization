@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Stefan - Free Bootstrap 4 Template by Colorlib</title>
+    <title>Portfolio - Stefan </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -20,11 +20,38 @@
     
     <link rel="stylesheet" href="./static/css/flaticon.css">
     <link rel="stylesheet" href="./static/css/icomoon.css">
-    <link rel="stylesheet" href="./static/css/style.css">
+	<link rel="stylesheet" href="./static/css/style.css">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+	<script>
+		function disableClick(){ 
+		  document.onclick=function(event){ 
+			if (event.button == 2) { 
+			  alert('Right Click Message'); 
+			  return false; 
+			} 
+		  } 
+		}
+		
+	</script> 
   </head>
-  <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
-	  
-	  
+  <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300" onLoad="disableClick()">
+
+	<style>
+		/* #cf {
+			position:relative;
+		}
+		#cf div {
+			position:absolute;
+			left:0;
+			-webkit-transition: opacity 1s ease-in-out;
+			-moz-transition: opacity 1s ease-in-out;
+			-o-transition: opacity 1s ease-in-out;
+			transition: opacity 1s ease-in-out;
+		}
+		#cf div.top:hover {
+			opacity:0;
+		} */
+	</style>
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar ftco-navbar-light site-navbar-target" id="ftco-navbar">
 	    <div class="container">
 	      <a class="navbar-brand" href="index.html"><span>S</span>tefan Vercillo</a>
@@ -56,11 +83,11 @@
           	<div class="text text-center">
           		<span class="subheading">Hey! I am</span>
 		  				<h1>Stefan Vercillo</h1>
-			  				<h2>I'm a 
+			  				<h2>I'm an asipring
 								<span
 									class="txt-rotate"
 									data-period="10"
-									data-rotate='[ "Software Developer.", "Good Spelller.", "Software Developer."]'></span>
+									data-rotate='[ "software engineer.", "good spelller.", "entrepreneur."]'></span>
 					</h2>
 				</div>
             </div>
@@ -79,9 +106,9 @@
     		<div class="row d-flex no-gutters">
     			<div class="col-md-6 col-lg-6 d-flex">
     				<div class="img-about img d-flex align-items-stretch">
-    					<div class="overlay"></div>
-	    				<div class="img d-flex align-self-stretch align-items-center" style="background-image:url(./static/images/me.PNG);">
-	    				</div>
+						<div class="overlay"></div>
+							<div class="img d-flex align-self-stretch align-items-center" style="background-image:url(./static/images/me.png);">
+							</div>
     				</div>
     			</div>
     			<div class="col-md-6 col-lg-6 pl-md-5 py-5">
@@ -1014,7 +1041,7 @@
           <div class="col-md-12 text-center">
 
             <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  <!-- Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> -->
+				This template was created by Stefan Vercillo with collaboration with  <i class="icon-heart color-danger" aria-hidden="true"></i> <a href="https://colorlib.com" target="_blank">Colorlib</a>
   <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
           </div>
         </div>
