@@ -12,7 +12,7 @@ Using open source data from open2flights a list of every active airport and airp
 ## Usage
 
 #### Enter Airports 
-  ![](/static/images/animation.PNG)
+  ![](/static/images/startanimation.PNG)
 
 
 ## Stack
