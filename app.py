@@ -13,6 +13,15 @@ def index():
 def second_pages():
     return render_template('pathfinding.html')
 
+@app.route('/portrait')
+def get_image(pid):
+    image_binary = read_image(pid)
+    response = make_response(image_binary)
+    response.headers.set('Content-Type', 'image/png')
+    response.headers.set(
+        'Content-Disposition', 'attachment', filename='%s.jpg' % pid)
+    return response
+
 @app.route('/getFlightData')
 def about(): 
 

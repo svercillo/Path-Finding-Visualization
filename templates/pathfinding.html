@@ -160,7 +160,16 @@
         </div>
 
         <div class="div" id="chartdiv" display="none"></div>
-        <link rel="stylesheet" type="text/css" href="./static/css/mapstyle.css">
+        <link rel="stylesheet" type="text/css" href="./static/css/mapstyle.css">    
+
+        
+
+        <div class="modal-footer" id="goBackD">
+            <button id="goBack"  display="none" class="w3-btn w3-blue w3-round-xlarge" width="100px" style="position: absolute; top: 10px; right: 10px;" height="60px" background-color="blue" color="black" data-dismiss="modal">New Route</button>
+        </div>
+        <div id="preview">
+            <h4>Statistics </h4>
+        </div>
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -179,7 +188,11 @@
             // rendering page load, etc
             var x = document.getElementById("togglemodal");
             const y = document.getElementById("chartdiv");
+            var gobackButton = document.getElementById("goBack");
+            var stats= document.getElementById("preview");
 
+            stats.style.display = "none"
+            gobackButton.style.display = "none"
             x.style.display = 'none'
             $("#container").hide();
             setTimeout(function(){ 
@@ -187,19 +200,32 @@
                 
                 $("#preload").fadeOut();
                 $("#container").show();
-            }, 3000);
+            }, 100);
 
             $(document).ready(function(){
                 
-
-                $("#startanimation").click(function(){
+                $("#startanimation").click( async function(){
+                    stats.style.display = ''
+                    gobackButton.style.display = ""
                     var from = $("#from").val();
                     var to = $("#to").val();
                     
                     y.style.display ='';
                     let x = document.getElementById("togglemodal");
                     x.style.display = 'none'
-                    start(from.toString().toUpperCase(),to.toString().toUpperCase())
+                    var path = await start(from.toString().toUpperCase(),to.toString().toUpperCase())
+                    console.log(path)
+                    
+                    // start(to.toString().toUpperCase(),from.toString().toUpperCase())
+                })
+
+                
+                $("#goBack").click(function(){
+                    gobackButton.style.display = "none"
+                    stats.style.display = "none"
+                    y.style.display ='none';
+                    x.style.display = "";
+                    console.log("clicked")
                 })
             })
         </script>

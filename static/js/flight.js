@@ -198,7 +198,7 @@ class List {
     print () {
         var t = this.head;
         while (t != null) {
-            console.log(t);
+            // console.log(t);
             t = t.next;
         }
     }
@@ -208,23 +208,25 @@ class List {
     }
 }
 
+
 //   API calls / page initiation scripts
 async function start(from, to ) {
     var result = {};
-
+    
     try {
         result = await $.ajax({
             url: "/getFlightData"
         });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
     }
     
     
-    var launcher = new Launcher(result);
     // launch app
+    var launcher = new Launcher(result);
     launcher.launch(from, to);
 }
+
 
 
 
@@ -236,14 +238,16 @@ class Launcher {
     }
     
 
-    launch(from, to){
+    async launch(from, to){
         
         
         var ACTQUEUE = []
         var PATH = null;
+        var TOTALD = null;
         var data = this.data
         var MAXVISITS = 0;
-        console.log(data);
+        var absDistance = 0;
+        // console.log(data);
 
 
         //  INITAL VARIABLES
@@ -261,7 +265,7 @@ class Launcher {
         // Themes end
         ``
         // Create map instance
-        console.log("SDFSDFSDFSD")
+        // console.log("SDFSDFSDFSD")
         var chart = am4core.create("chartdiv", am4maps.MapChart);
         chart.geodata = am4geodata_worldLow;
         // chart.projection = new am4maps.projections.Miller();           
@@ -337,19 +341,75 @@ class Launcher {
 
         
         // fly('CDG', 'IST')
-        // console.log(aStar('AER', 'YYZ'));
+        // // console.log(aStar('AER', 'YYZ'));
         animateAStar(from, to);
         async function animateAStar(from, to){
-            var res = aStar(from, to);
+            aStar(from, to);
             
-            var path = res.path;
             
-            if (res != 'path not found'){
+            if (PATH != 'path not found'){
+                console.log(PATH)
                 console.log(ACTQUEUE)
+
+
+
+                var text = "Most Optimal Path: "
+
+                for(var i= PATH.length-1; i>=0; i--){
+                    text += PATH[i] 
+                    if (i != 0){
+                        text += " -> "
+                    }
+                }
+
+
+                var para = document.createElement("h6");
+                var node = document.createTextNode(text);
+                para.appendChild(node);
+                var element = document.getElementById("preview");
+                element.appendChild(para);
+                
+                text = ""
+                text += "\nNumber of Connections: "
+                text += PATH.length -1;
+
+                var para2 = document.createElement("h6");
+                node = document.createTextNode(text);
+                para2.appendChild(node);
+                element = document.getElementById("preview");
+                element.appendChild(para2);
+
+                text = ""
+                text += "Distance of Path: "
+                text += Math.round(TOTALD/1000) + " km"
+                
+                var para3 = document.createElement("h6");
+                node = document.createTextNode(text);
+                para3.appendChild(node);
+                element = document.getElementById("preview");
+                element.appendChild(para3);
+
+
+                text = ""
+                text = "Direct Distance from " + PATH[PATH.length -1] + " to " + PATH[0] + ": " + Math.round(absDistance /1000)
+
+                var para3 = document.createElement("h6");
+                node = document.createTextNode(text);
+                para3.appendChild(node);
+                element = document.getElementById("preview");
+                element.appendChild(para3);
+                
+                var para0 = document.createElement("h6");
+                element = document.getElementById("preview");
+                node = document.createTextNode(".");
+                element.appendChild(para0);
+                
+
+
                 await animateMap(animateCityCreation);
                 
                 // setTimeout(async  function() {
-                    // fly("AER", "MSQ", 0);    
+                // fly("AER", "MSQ", 0);    
                 //     // fly("AER", "KZN", 0);
                 //     // addLine("AER", "MSQ")
                 //     // addLine("AER", "KZN")
@@ -455,8 +515,10 @@ class Launcher {
                             'from': path[path.length-1],
                             'to': path[path.length-2]
                         });
-                        ACTQUEUE.push({'action': 'animatecity', 'city': "YYZ", 'type' : 4});
+                        ACTQUEUE.push({'action': 'animatecity', 'city': neighbor, 'type' : 4});
                         PATH = path;
+                        TOTALD = totalD;
+                        absDistance = haversineDist(data['airports'][PATH[0]].coords, data['airports'][PATH[PATH.length-1]].coords);
                         return {'path' : path, 'distance' : totalD};
                     }
 
@@ -547,16 +609,16 @@ class Launcher {
             var animateList = [];
 
             // var prevact = "animatecity";
-            // console.log(ACTQUEUE);
+            // // console.log(ACTQUEUE);
 
             animateColl[animateColl.length -1].push({'action': 'animatecity', 'city': FROM, 'type' : 3})
-            await delay(delayPeriods.loadMap);
+            // await delay(delayPeriods.loadMap);
             animateCityCreation(null, null, animateColl[animateColl.length -1], -1);
             var flyList = []
             flyList = [];
             
             for (var i =2; i<ACTQUEUE.length-1; i++){
-                console.log("IN FOR LOOP");
+                // console.log("IN FOR LOOP");
                 switch (ACTQUEUE[i].action){
                     case 'animatecity':                        
                         if (ACTQUEUE[i].type == -1) {
@@ -566,7 +628,7 @@ class Launcher {
                             animateList.push(ACTQUEUE[i]);
                             // animateColl[animateColl.length-1].push(ACTQUEUE[i]);
                         } else { 
-                            console.log(ACTQUEUE[i])
+                            // console.log(ACTQUEUE[i])
                             
                             animateCityCreation(ACTQUEUE[i].city, ACTQUEUE[i].type, null, ACTQUEUE[i]['iteration']);
                         }
@@ -600,7 +662,7 @@ class Launcher {
             async function yellowDisBish(){
                 for ( var i=0; i< PATH.length; i++ ){
                     let CITY = PATH[i];
-                    console.log(CITY)
+                    // console.log(CITY)
                     animateColl[animateColl.length -1].push({'action': 'animatecity', 'city': CITY, 'type' : 4})
                     await animateCityCreation(null, null, animateColl[animateColl.length -1], -1);
                 }
@@ -616,7 +678,7 @@ class Launcher {
                         // // })
                         // // flyList.push({'action': 'fly', 'from': "YYZ",
                         // //             'to': "KEF"});
-                        // console.log("!!!!!!!!!!!!!!!!!")
+                        // // console.log("!!!!!!!!!!!!!!!!!")
                         // await processFlightList(flyList)
                         // flyList = [];
             await delay(5000);
@@ -628,7 +690,7 @@ class Launcher {
             var i =0;
             if (type == -1){
                 for (var i =0; i<list.length; i++){
-                    // console.log(data.airports[list[i]])
+                    // // console.log(data.airports[list[i]])
                     addCity(list[i].city, null, -1, -69);
                     await delay(10);
                 }
@@ -1022,7 +1084,7 @@ class Launcher {
                 yellowCols[i] = colY.string;
             }
         }
-        console.log(data)   
+        // console.log(data)   
 
         
         async function go(){            
@@ -1056,7 +1118,7 @@ class Launcher {
                 var shadowLine = shadowLineSeries.mapLines.create();
                 shadowLine.imagesToConnect = [from, to];
                 
-                console.log("!!!!!!!!!!!")
+                // console.log("!!!!!!!!!!!")
                 return line;
             }
             
