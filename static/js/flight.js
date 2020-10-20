@@ -391,7 +391,7 @@ class Launcher {
 
 
                 text = ""
-                text = "Direct Distance from " + PATH[PATH.length -1] + " to " + PATH[0] + ": " + Math.round(absDistance /1000)
+                text = "Direct Distance from " + PATH[PATH.length -1] + " to " + PATH[0] + ": " + Math.round(absDistance /1000) + " km"
 
                 var para3 = document.createElement("h6");
                 node = document.createTextNode(text);
