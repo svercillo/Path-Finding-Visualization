@@ -9,10 +9,13 @@ The purpose of this project is to provide a visualziation of a path finding algo
 
 Using open source data from open2flights a list of every active airport and airport route in the world is store. This is based off an importaant pathfinding algorithm used in solving numerous computer science problems so it was a great experience to build this, I hope you enjoy!
 
-## Usage
+## Features
 
-#### Enter Airports 
+##### Enter Airports 
   ![](/static/images/startanimation.PNG)
+  
+##### Watch visualization and see how good algorithm is with the listed statitics
+  ![](/static/images/map.PNG)
 
 
 ## Stack
