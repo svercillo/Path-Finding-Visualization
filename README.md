@@ -12,7 +12,7 @@ Using open source data from open2flights a list of every active airport and airp
 ## Features
 
   
-#### Enter desired route and watch visualization. See how with the computed path length and the length of the direct connection! 
+#### Enter desired route and watch visualization. See how good the algorithm did comparing the computed path length and the length of the direct connection! 
   ![](/static/images/map.PNG)
 
 
