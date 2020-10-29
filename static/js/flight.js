@@ -346,7 +346,6 @@ class Launcher {
         async function animateAStar(from, to){
             aStar(from, to);
             
-            
             if (PATH != 'path not found'){
                 console.log(PATH)
                 console.log(ACTQUEUE)
@@ -391,7 +390,7 @@ class Launcher {
 
 
                 text = ""
-                text = "Direct Distance from " + PATH[PATH.length -1] + " to " + PATH[0] + ": " + Math.round(absDistance /1000) + " km"
+                text = "Direct Path Distance: "  + Math.round(absDistance /1000) + " km"
 
                 var para3 = document.createElement("h6");
                 node = document.createTextNode(text);
@@ -407,13 +406,7 @@ class Launcher {
 
 
                 await animateMap(animateCityCreation);
-                
-                // setTimeout(async  function() {
-                // fly("AER", "MSQ", 0);    
-                //     // fly("AER", "KZN", 0);
-                //     // addLine("AER", "MSQ")
-                //     // addLine("AER", "KZN")
-                // }, 5000)
+            
             }
             
         }

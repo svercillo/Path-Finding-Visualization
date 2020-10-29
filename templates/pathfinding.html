@@ -5,12 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
+        <title>Portfolio - Stefan </title>
+        <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="static/css/styles.css" rel="stylesheet" />
         <!-- Hotjar Tracking Code for www.stefanvercillo.com -->
         <script>
             (function(h,o,t,j,a,r){
@@ -92,13 +100,13 @@
                 font-size:20px
             }
             .chartdiv{
-                width: 100%;
+                width: 80%;
                 height: 1000px;
                 background-color: green;
             }
             .div{
                 width: 100%;
-                height: 1000px;
+                height: 550px;
             }
         </style>
     </head>
@@ -140,18 +148,16 @@
                 <h4 class="modal-title"></h4>
                 </div>
                 <div class="modal-body">
-                <h3> Enter the Starting and Destination Airport Codes</h3>
+                <h4> Enter the Starting and Destination IATA Airport Codes (3 letter codes)</h4>
                 </div>
 
                 <div class="modal-body mx-3">
                 <div class="md-form mb-5">
-                <i class="fas fa-envelope prefix grey-text"></i>
                 <label data-error="wrong" data-success="right" for="defaultForm-email" font-size="20px">FROM:</label>
                 <input id="from" type="email" id="defaultForm-email" class="form-control validate" placeholder="AER" >
                 </div>
 
                 <div class="md-form mb-4">
-                <i class="fas fa-lock prefix grey-text"></i>
                 <label data-error="wrong" data-success="right" for="defaultForm-pass" font-size="20px">TO:</label>
                 <input id="to" type="email" id="defaultForm-emial" class="form-control validate" placeholder="YYZ">
                 </div>
@@ -170,8 +176,13 @@
         </div>
         </div>
 
-        <div class="div" id="chartdiv" display="none"></div>
-        <link rel="stylesheet" type="text/css" href="./static/css/mapstyle.css">    
+
+        <!-- <link rel="stylesheet" type="text/css" href="/static/css/mapstyle.css">     -->
+        <div class="div" id="chartdiv" display="none">
+            <div style="position: relative; width: 250px;">
+            </div>
+
+        </div>
 
         
 
@@ -193,7 +204,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <script src="./static/js/flight.js"></script>
+        <script src="/static/js/flight.js"></script>
 
         <script>
             // rendering page load, etc
@@ -218,14 +229,13 @@
                 $("#startanimation").click( async function(){
                     stats.style.display = ''
                     gobackButton.style.display = ""
-                    var from = $("#from").val();x
+                    var from = $("#from").val();
                     var to = $("#to").val();
                     
                     y.style.display ='';
                     let x = document.getElementById("togglemodal");
                     x.style.display = 'none'
                     var path = await start(from.toString().toUpperCase(),to.toString().toUpperCase())
-                    console.log(path)
                     
                     // start(to.toString().toUpperCase(),from.toString().toUpperCase())
                 })

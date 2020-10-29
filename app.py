@@ -11,6 +11,11 @@ def index():
 
 @app.route('/path-finding-visualization')
 def second_pages():
+    return render_template('about_path_finding.html')
+
+
+@app.route('/path-finding-visualization/demo')
+def demo_template():
     return render_template('pathfinding.html')
 
 @app.route('/portrait')
