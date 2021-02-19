@@ -1,7 +1,7 @@
 # Path-Finding Visualization
 
 ## Prod Model
-Visit stefanvercillo.com/path-finding-visualization to see a working production model of this project
+Visit [DEMO SITE](https://stefanvercillo.com/path-finding-visualization) to see a working production model of this project
 
 ## Introduction
 
